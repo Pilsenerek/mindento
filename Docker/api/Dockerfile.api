@@ -1,0 +1,33 @@
+FROM php:8.2-apache
+
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+ENV APACHE_DOCUMENT_ROOT /var/www/app/public
+ENV APP_CACHE_DIR /tmp/var/
+
+RUN apt-get update && apt-get install -y \
+    mc \
+    zlib1g-dev \
+    libzip-dev \
+    git \
+    libmemcached-dev \
+    libpq-dev \
+    unzip \
+    curl \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    ca-certificates \
+    openssl \
+ && apt-get upgrade -y openssl \
+ && a2enmod rewrite \
+ && echo "AllowEncodedSlashes On" >> /etc/apache2/apache2.conf \
+ && docker-php-ext-install pdo_mysql zip bcmath ctype opcache curl \
+ && printf "no --disable-memcached-sasl\n" | pecl install memcached && echo extension=memcached.so > /usr/local/etc/php/conf.d/memcached.ini \
+ && rm -rf /var/lib/apt/lists/* \
+ && apt-get clean
+
+#Replace default apache document root
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}/!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+WORKDIR $APACHE_DOCUMENT_ROOT/..
