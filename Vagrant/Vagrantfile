@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
         "proxy.mindento.local"
       ]
 
-      node.vm.synced_folder "F:/DEV/mindento/Api", "/Core"
+      node.vm.synced_folder "F:/DEV/mindento/Api", "/Api"
       node.vm.synced_folder "F:/DEV/mindento/Docker", "/Docker"
 
       node.vm.provision :shell, path: "provision.sh"

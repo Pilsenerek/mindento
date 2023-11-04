@@ -1,3 +1,13 @@
+# Introduction
+
+Simply business trips management app.
+
+Services and technologies
+- Traefik 3.0 (as routing proxy)
+- Api 
+  - Apache 2.4 + PHP 8.2 + Symfony 6.3
+  - Architecture: Symfony Skeleton + Framework Agnostic + DDD elements
+- Mariadb 11
 
 # Project setup & use
 
@@ -21,7 +31,7 @@ vagrant plugin install vagrant-vbguest vagrant-hostmanager vagrant-disksize vagr
 
 ````
 # edit this line, replace the first path with your workspace windows dir, leave the second path unchanged!
-node.vm.synced_folder "F:/DEV/mindento/Api", "/Core"
+node.vm.synced_folder "F:/DEV/mindento/Api", "/Api"
 node.vm.synced_folder "F:/DEV/mindento/Docker", "/Docker"
 ````
 - Run & ensure, that machine is ready and Docker containers are working inside 
@@ -40,7 +50,13 @@ api.mindento.local (obligatory)
 proxy.mindento.local (optional)
 test.mindento.local (optional)
 ````
-- Run docker-compose
+- Ensure that Volume in docker-compose.yml is correctly sync with Api local dir
+````
+volumes:
+  - /Api:/var/www/app/
+````
+
+- Build & run containers
 ````
 docker-compose up -d
 ````
@@ -51,7 +67,7 @@ docker-compose up -d
 docker-compose exec api bash
 composer install
 bin/console doctrine:schema:create
-bin/console doctrine:fixtures:load
+bin/console doctrine:fixtures:load -n
 ````
 
 ## 4. Tests
